@@ -1,8 +1,8 @@
 <template>
   <transition name="fade">
-    <div v-if="active" class="loading-overlay">
+    <div v-if="loadingStore.isLoading" class="loading-overlay">
       <div class="logo-container">
-        <img src="../assets/logo.svg" alt="Logo" class="logo" />
+        <img :src="logoSvg" alt="Logo" class="logo" />
       </div>
       <div class="loader">
         <div class="orbit">
@@ -17,9 +17,9 @@
       </div>
       <div class="loading-content">
         <span class="loading-title">Preparando sua experiência...</span>
-        <span class="loading-text">{{ randomMessage }}</span>
+        <span class="loading-text">{{ loadingStore.randomMessage }}</span>
         <div class="progress-bar">
-          <div class="progress" :style="{ width: progress + '%' }"></div>
+          <div class="progress" :style="{ width: loadingStore.progress + '%' }"></div>
         </div>
       </div>
     </div>
@@ -27,37 +27,14 @@
 </template>
 
 <script setup>
-import { defineProps, ref, onMounted } from 'vue'
+import { onMounted } from 'vue'
+import { useLoadingStore } from '../modules/loading'
+import logoSvg from '@/assets/logo.svg'
 
-const props = defineProps({
-  active: {
-    type: Boolean,
-    default: false
-  }
-})
-
-const messages = [
-  "Dica: Clique na foto de perfil para uma surpresa!",
-  "Sabia? A criatividade é o combustível da inovação.",
-  "Seu networking começa aqui. Aproveite!",
-  "Carregando conexões poderosas...",
-  "Inspirando novas ideias para você."
-]
-
-const randomMessage = ref(messages[Math.floor(Math.random() * messages.length)])
-const progress = ref(0)
+const loadingStore = useLoadingStore()
 
 onMounted(() => {
-  // Simula progresso animado
-  let val = 0
-  const interval = setInterval(() => {
-    val += Math.random() * 7
-    if (val >= 100) {
-      val = 100
-      clearInterval(interval)
-    }
-    progress.value = Math.floor(val)
-  }, 180)
+  loadingStore.simulateProgress()
 })
 </script>
 

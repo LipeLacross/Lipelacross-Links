@@ -1,37 +1,28 @@
 <template>
   <div class="social-links">
     <img
-        src="@/assets/Photo Profile.png"
-        alt="Foto de Felipe Moreira"
+        :src="userProfileStore.profile.profilePic"
+        :alt="`Foto de ${userProfileStore.profile.name}`"
         class="profile-pic"
-        @click="toggleAnimation"
-        :class="{ animate: isAnimating }"
+        @click="userProfileStore.toggleProfileAnimation"
+        :class="{ animate: userProfileStore.isAnimating }"
     />
     <div class="content-container">
       <div class="info-container">
-        <p class="name">Felipe Moreira</p>
-        <p class="role">Developer</p>
+        <p class="name">{{ userProfileStore.profile.name }}</p>
+        <p class="role">{{ userProfileStore.profile.role }}</p>
       </div>
       <div class="links-container">
-        <a href="https://www.instagram.com/lipelacross" class="social-link instagram" title="Instagram">
-          <img src="@/assets/instagram.png" alt="Instagram" class="social-icon" />
-          <span>Instagram</span>
-        </a>
-        <a href="https://www.linkedin.com/in/lipelacross-developer" class="social-link linkedin" title="LinkedIn">
-          <img src="@/assets/linkedin.png" alt="LinkedIn" class="social-icon" />
-          <span>LinkedIn</span>
-        </a>
-        <a href="https://www.youtube.com/@DevLipeLacross" class="social-link youtube" title="YouTube">
-          <img src="@/assets/youtube.png" alt="YouTube" class="social-icon" />
-          <span>YouTube</span>
-        </a>
-        <a href="https://github.com/lipelacross" class="social-link github" title="GitHub">
-          <img src="@/assets/github.png" alt="GitHub" class="social-icon" />
-          <span>GitHub</span>
-        </a>
-        <a href="https://lacrosstech.com.br" class="social-link portfolio" title="LacrossTech">
-          <img src="@/assets/logo.png" alt="Portfolio" class="social-icon" />
-          <span>LacrossTech</span>
+        <a
+          v-for="link in userProfileStore.profile.socialLinks"
+          :key="link.name"
+          :href="link.url"
+          class="social-link"
+          :class="link.name.toLowerCase()"
+          :title="link.title"
+        >
+          <img :src="link.icon" :alt="link.name" class="social-icon" />
+          <span>{{ link.name }}</span>
         </a>
       </div>
     </div>
@@ -39,13 +30,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { useUserProfileStore } from '../modules/userProfile'
 
-const isAnimating = ref(false);
-
-function toggleAnimation() {
-  isAnimating.value = !isAnimating.value;
-}
+const userProfileStore = useUserProfileStore()
 </script>
 
 <style scoped>
@@ -148,19 +135,6 @@ function toggleAnimation() {
   animation: fadeInText 1s forwards 1.2s;
 }
 
-/* Animação de fundo */
-@keyframes gradientShift {
-  0% {
-    background-position: 0% 0%;
-  }
-  50% {
-    background-position: 100% 100%;
-  }
-  100% {
-    background-position: 0% 0%;
-  }
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -241,11 +215,9 @@ function toggleAnimation() {
   font-weight: bold;
   cursor: pointer;
   transition: transform 0.3s ease, background-color 0.3s ease;
-  animation: buttonHover 3s infinite, zoomIn 2s infinite;
   opacity: 0;
   animation: fadeInSlideUp 1s forwards, zoomIn 2s infinite;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 
 /* Atraso para a animação de cada link */
@@ -276,9 +248,13 @@ function toggleAnimation() {
 }
 
 .social-link:hover {
-  background-color: #FFDE59;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  background-color: rgba(255, 222, 89, 0.9);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
 
+.lacrosstech:hover {
+  background-color: #e6b800;
+  color: #000 !important;
 }
 .social-link:active {
   filter: brightness(0.92);
@@ -311,22 +287,14 @@ function toggleAnimation() {
   color: #222 !important;
 }
 
-
-/* Animação de flash para o fundo da página */
-body {
-  animation: flash 1s ease-out;
+.lacrosstech {
+  background-color: #ffcf00;
+  color: #222 !important;
 }
 
-@keyframes buttonHover {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
+
+/* Animação de flash removida do body para melhor performance */
+
+
 
 </style>
